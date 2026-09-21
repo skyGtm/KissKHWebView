@@ -52,7 +52,7 @@ window.__kisskhFocusables().forEach(e=>{if(!e.hasAttribute('tabindex')&&e.tagNam
             override fun shouldInterceptRequest(v:WebView?,url:String?):WebResourceResponse?{if(store.blockAds&&url!=null&&blocker.isBlocked(url))return WebResourceResponse("text/plain","utf-8",ByteArray(0).inputStream());return super.shouldInterceptRequest(v,url)}
             override fun shouldOverrideUrlLoading(v:WebView?,r:WebResourceRequest?):Boolean{val u=r?.url?:return false;return handleNavigation(u.toString())}
             override fun shouldOverrideUrlLoading(v:WebView?,url:String?):Boolean=handleNavigation(url?:"")
-            override fun onPageFinished(v:WebView?,url:String?){super.onPageFinished(v,url);if(tv&&store.tvNavigation)v?.evaluateJavascript(focusJs,null);store.relativeFor(url ?: "")?.let{path->scope.launch(Dispatchers.IO){store.addHistory(v?.title?:"",path)}}}
+            override fun onPageFinished(v:WebView?,url:String?){super.onPageFinished(v,url);if(tv&&store.tvNavigation)v?.evaluateJavascript(focusJs,null);store.relativeFor(url ?: "")?.let{path->val pageTitle=v?.title?:"";scope.launch(Dispatchers.IO){store.addHistory(pageTitle,path)}}}
         }
         web.setOnFocusChangeListener{_,has->if(has&&tv)web.evaluateJavascript(focusJs,null)}
         web.loadUrl(store.baseUrl)
