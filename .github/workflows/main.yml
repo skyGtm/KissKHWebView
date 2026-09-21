@@ -1,4 +1,4 @@
-name: Android Debug Build
+name: Android Build & Release
 
 on:
   push:
@@ -39,12 +39,36 @@ jobs:
           gradle-version: '8.10.2'
 
       - name: Build debug APK
-        run: gradle --no-daemon --stacktrace assembleDebug
+        id: build
+        shell: bash
+        run: |
+          set -o pipefail
+          gradle --no-daemon --console=plain --stacktrace --warning-mode all assembleDebug 2>&1 | tee build.log
+
+      - name: Print compiler diagnostics on failure
+        if: failure() && steps.build.outcome == 'failure'
+        shell: bash
+        run: |
+          echo '===== COMPILER DIAGNOSTICS ====='
+          grep -E '(^e: |^error:|Compilation error|Unresolved reference|Type mismatch|Cannot access|Overload resolution ambiguity|Expecting |Conflicting overloads|None of the following functions)' build.log | tail -n 200 || true
+          echo '===== LAST 250 BUILD LOG LINES ====='
+          tail -n 250 build.log || true
+
+      - name: Upload failure log
+        if: failure() && steps.build.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: KissKHWebView-build-log
+          path: build.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Rename APK
+        if: success()
         run: cp app/build/outputs/apk/debug/app-debug.apk KissKHWebView-debug.apk
 
       - name: Upload workflow artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: KissKHWebView-debug
