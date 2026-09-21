@@ -28,3 +28,24 @@ Push a tag such as `v1.0.0` to build the debug APK and attach it directly to the
 The filter engine intentionally implements a conservative subset of common network-filter syntax. Cosmetic CSS rules are ignored because WebView request interception can block network resources but cannot safely implement every browser-extension cosmetic rule. A custom allow/block rule can be supplied from Settings.
 
 KissKH can change its domains and site internals. The wrapper therefore keeps the base origin configurable and does not embed the site's API or media implementation.
+
+## GitHub Actions
+
+The workflow is at `.github/workflows/android.yml`.
+
+- Manual build: Actions → Android Build & Release → Run workflow
+- Release build: push a tag such as `v1.0.0`
+- The debug APK is attached directly to the GitHub Release.
+- The workflow also keeps a short-lived Actions artifact as a secondary copy.
+
+Example:
+
+```bash
+git add .
+git commit -m "Initial KissKH WebView"
+git push
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The workflow uses Java 17, Gradle 8.10.2, Android SDK 35, and current GitHub Actions runtimes.
