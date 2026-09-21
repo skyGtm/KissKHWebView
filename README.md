@@ -49,3 +49,9 @@ git push origin v1.0.0
 ```
 
 The workflow uses Java 17, Gradle 8.10.2, Android SDK 35, and current GitHub Actions runtimes.
+
+### CI SDK note
+
+The workflow uses `android-actions/setup-android@v4`. Do not change this
+back to v3: the older v3 workflow can request the removed `tools` SDK package,
+which causes `sdkmanager` to fail with `Failed to find package 'tools'`.
